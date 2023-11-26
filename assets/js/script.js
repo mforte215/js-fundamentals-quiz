@@ -1,5 +1,6 @@
-let isPlaying = false;
-
+const SCORE_VALUE = 100;
+const STARTING_SCORE = 0;
+let currentScore = 0;
 const QUESTION_ONE = {
     id: 1,
     question: "What is the extension for javascript files?",
@@ -10,8 +11,8 @@ const QUESTION_ONE = {
 const QUESTION_TWO = {
     id: 2,
     question: "What of the following is not a javascript datatype?",
-    answers: ["Number", "String", "Letter", "Boolean"],
-    correctAnswerIndex: 3
+    answers: ["Number", "Letter", "String", "Boolean"],
+    correctAnswerIndex: 1
 }
 const QUESTION_THREE = {
     id: 3,
@@ -21,15 +22,15 @@ const QUESTION_THREE = {
 }
 const QUESTION_FOUR = {
     id: 4,
-    question: "What is the extension for javascript files?",
-    answers: [".doc", ".css", ".html", ".js"],
-    correctAnswerIndex: 3
+    question: "What object is the main entry point for all client-side js features and APIs?",
+    answers: ["Window", "Global", "Position", "Location"],
+    correctAnswerIndex: 0
 }
 const QUESTION_FIVE = {
     id: 5,
-    question: "What is the extension for javascript files?",
-    answers: [".doc", ".css", ".html", ".js"],
-    correctAnswerIndex: 3
+    question: "Why is the JS engine needed?",
+    answers: ["To compile script", "To compile and then interpert script", "To interpert script", "None of the above"],
+    correctAnswerIndex: 2
 }
 
 const QUESTION_BANK = [QUESTION_ONE, QUESTION_TWO, QUESTION_THREE, QUESTION_FOUR, QUESTION_FIVE];
@@ -40,7 +41,7 @@ const onGameLoad = () => {
 
 const startGame = () => {
     console.log("Starting Game!");
-    const startText = "Welcome to the JS Fundamentals quiz game! This quiz will text your knowledge of Javascript. Press Start to begin!"
+    const startText = "Welcome to the JS Fundamentals quiz game! This quiz will text your knowledge of Javascript. Press Start to begin!";
     const mainDisplayText = document.querySelector(".main-display-text");
     console.log(mainDisplayText);
     mainDisplayText.innerText = startText;
@@ -55,6 +56,7 @@ const startGame = () => {
 }
 
 const startQuiz = () => {
+    setScore();
     let currentQuestion = 0;
     if (currentQuestion < QUESTION_BANK.length) {
         displayQuestion(currentQuestion);
@@ -65,12 +67,12 @@ const startQuiz = () => {
 }
 
 const displayQuestion = (questionIndex) => {
-    console.log("Displaying Question: " + questionIndex);
-
     const startBtn = document.getElementById("start-button");
     if (startBtn != null) {
         startBtn.remove();
     }
+
+    console.log("Displaying Question: " + questionIndex);
     const mainDisplayText = document.querySelector(".main-display-text");
     mainDisplayText.innerText = QUESTION_BANK[questionIndex].id + ". " + QUESTION_BANK[questionIndex].question
     const buttonDisplayContainer = document.querySelector(".button-display-container");
@@ -91,22 +93,58 @@ const checkAnswer = (questionIndex, answerIndex) => {
     console.log("QUESTION:" + questionIndex + " Answer Clicked:" + answerIndex);
     if (QUESTION_BANK[questionIndex].correctAnswerIndex == answerIndex) {
         console.log("CORRECT!");
+        currentScore = currentScore + SCORE_VALUE;
+        setScore(currentScore);
         document.getElementById("a" + answerIndex).classList.add("correct");
         let nextQuestionIndex = questionIndex + 1;
-        const buttonDisplayContainer = document.querySelector(".button-display-container");
-        setTimeout(displayQuestion(nextQuestionIndex), 1000);
+        if (nextQuestionIndex < QUESTION_BANK.length) {
+            removePreviousQuestion();
+            setTimeout(() => displayQuestion(nextQuestionIndex), 200);
+        }
+        else {
+            console.log("DONE!");
+        }
     }
     else {
         console.log("WRONG!");
         document.getElementById("a" + answerIndex).classList.add("wrong");
         let nextQuestionIndex = questionIndex + 1;
-        const buttonDisplayContainer = document.querySelector(".button-display-container");
-        setTimeout(displayQuestion(nextQuestionIndex), 1000);
+        if (nextQuestionIndex < QUESTION_BANK.length) {
+            removePreviousQuestion();
+            setTimeout(() => displayQuestion(nextQuestionIndex), 200);
+        }
+        else {
+            console.log("DONE!");
+        }
+
     }
+}
+
+const setScore = () => {
+    document.querySelector(".score-board").innerText = "SCORE: " + currentScore;
 }
 
 const removePreviousQuestion = () => {
 
+    setTimeout(() => {
+
+        const a1 = document.getElementById("a0");
+        if (a1 != null) {
+            a1.remove();
+        }
+        const a2 = document.getElementById("a1");
+        if (a2 != null) {
+            a2.remove();
+        }
+        const a3 = document.getElementById("a2");
+        if (a3 != null) {
+            a3.remove();
+        }
+        const a4 = document.getElementById("a3");
+        if (a4 != null) {
+            a4.remove();
+        }
+    }, 200);
 }
 
 const startTimer = () => {

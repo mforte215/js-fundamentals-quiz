@@ -40,7 +40,7 @@
 
 .main-display-container {
   width: 60%;
-  margin: 10% auto 0 auto;
+  margin: 2% auto 0 auto;
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
@@ -78,4 +78,10 @@
 
 .correct {
   background-color: green;
+}
+
+.score-board {
+  text-align: center;
+  font-size: 4em;
+  margin: 0 0 3% 0;
 }
