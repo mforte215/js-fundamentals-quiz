@@ -1,6 +1,6 @@
 const SCORE_VALUE = 100;
 const STARTING_SCORE = 0;
-let currentScore = 0;
+const STARTING_QUESTION_INDEX = 0;
 const QUESTION_ONE = {
     id: 1,
     question: "What is the extension for javascript files?",
@@ -16,7 +16,7 @@ const QUESTION_TWO = {
 }
 const QUESTION_THREE = {
     id: 3,
-    question: "What is the HTML tag to add a javacript file?",
+    question: "What is the HTML tag to add a javacript file to a page?",
     answers: ["<href>", "<body>", "<link>", "<script>"],
     correctAnswerIndex: 3
 }
@@ -35,15 +35,18 @@ const QUESTION_FIVE = {
 
 const QUESTION_BANK = [QUESTION_ONE, QUESTION_TWO, QUESTION_THREE, QUESTION_FOUR, QUESTION_FIVE];
 
+const TOTAL_SCORE = SCORE_VALUE * QUESTION_BANK.length;
+
+let currentScore = 0;
+
 const onGameLoad = () => {
     startGame();
 }
 
 const startGame = () => {
-    console.log("Starting Game!");
+
     const startText = "Welcome to the JS Fundamentals quiz game! This quiz will text your knowledge of Javascript. Press Start to begin!";
     const mainDisplayText = document.querySelector(".main-display-text");
-    console.log(mainDisplayText);
     mainDisplayText.innerText = startText;
     const startBtn = document.createElement("button");
     startBtn.id = "start-button";
@@ -57,13 +60,7 @@ const startGame = () => {
 
 const startQuiz = () => {
     setScore();
-    let currentQuestion = 0;
-    if (currentQuestion < QUESTION_BANK.length) {
-        displayQuestion(currentQuestion);
-    }
-    else {
-        isPlaying = false;
-    }
+    displayQuestion(STARTING_QUESTION_INDEX);
 }
 
 const displayQuestion = (questionIndex) => {
@@ -72,7 +69,6 @@ const displayQuestion = (questionIndex) => {
         startBtn.remove();
     }
 
-    console.log("Displaying Question: " + questionIndex);
     const mainDisplayText = document.querySelector(".main-display-text");
     mainDisplayText.innerText = QUESTION_BANK[questionIndex].id + ". " + QUESTION_BANK[questionIndex].question
     const buttonDisplayContainer = document.querySelector(".button-display-container");
@@ -90,7 +86,6 @@ const displayQuestion = (questionIndex) => {
 }
 
 const checkAnswer = (questionIndex, answerIndex) => {
-    console.log("QUESTION:" + questionIndex + " Answer Clicked:" + answerIndex);
     if (QUESTION_BANK[questionIndex].correctAnswerIndex == answerIndex) {
         console.log("CORRECT!");
         currentScore = currentScore + SCORE_VALUE;
@@ -103,6 +98,7 @@ const checkAnswer = (questionIndex, answerIndex) => {
         }
         else {
             console.log("DONE!");
+            processEndGame();
         }
     }
     else {
@@ -115,10 +111,19 @@ const checkAnswer = (questionIndex, answerIndex) => {
         }
         else {
             console.log("DONE!");
+            processEndGame();
         }
 
     }
 }
+
+const processEndGame = () => {
+    const FINAL_SCORE = currentScore / TOTAL_SCORE;
+    removePreviousQuestion();
+    const mainDisplayText = document.querySelector(".main-display-text");
+    mainDisplayText.remove();
+
+};
 
 const setScore = () => {
     document.querySelector(".score-board").innerText = "SCORE: " + currentScore;
