@@ -37,6 +37,7 @@ const QUESTION_BANK = [QUESTION_ONE, QUESTION_TWO, QUESTION_THREE, QUESTION_FOUR
 
 const TOTAL_SCORE = SCORE_VALUE * QUESTION_BANK.length;
 
+
 let currentScore = 0;
 
 const onGameLoad = () => {
@@ -44,18 +45,54 @@ const onGameLoad = () => {
 }
 
 const startGame = () => {
-
+    currentScore = 0;
     const startText = "Welcome to the JS Fundamentals quiz game! This quiz will text your knowledge of Javascript. Press Start to begin!";
-    const mainDisplayText = document.querySelector(".main-display-text");
-    mainDisplayText.innerText = startText;
+    const mainDisplayContainer = document.querySelector(".main-display-container");
+    let scoreBoard = document.querySelector(".score-board");
+    if (!scoreBoard) {
+        scoreBoard = document.createElement("p");
+        scoreBoard.classList.add("score-board");
+        scoreBoard.textContent = "SCORE: --";
+        mainDisplayContainer.append(scoreBoard);
+    }
+    let mainDisplayText = document.querySelector(".main-display-text");
+    if (mainDisplayText) {
+        mainDisplayText.innerText = startText;
+    }
+    else {
+        console.log("CREATING MAIN DISPLAY TEXT");
+        mainDisplayText = document.createElement("p");
+        mainDisplayText.classList.add("main-display-text");
+        mainDisplayText.innerText = startText;
+        mainDisplayContainer.append(mainDisplayText);
+    }
+
+    let highScoreContainer = document.querySelector(".high-score-header-container");
+    if (highScoreContainer) {
+        highScoreContainer.remove();
+    }
+
     const startBtn = document.createElement("button");
     startBtn.id = "start-button";
     startBtn.innerText = "Start"
     startBtn.classList.add("start-btn");
-    const buttonDisplayContainer = document.querySelector(".button-display-container");
-    buttonDisplayContainer.appendChild(startBtn);
+    let buttonDisplayContainer = document.querySelector(".button-display-container");
+    if (buttonDisplayContainer) {
+        buttonDisplayContainer.appendChild(startBtn);
+    }
+    else {
+        buttonDisplayContainer = document.createElement("div");
+        buttonDisplayContainer.classList.add("button-display-container");
+        buttonDisplayContainer.appendChild(startBtn);
+        mainDisplayContainer.append(buttonDisplayContainer);
+    }
+
     isPlaying = true;
     startBtn.addEventListener("click", startQuiz);
+    const highScoreLink = document.querySelector(".high-scores-link");
+    highScoreLink.textContent = "High Scores";
+    highScoreLink.removeEventListener("click", startGame);
+    highScoreLink.addEventListener("click", displayHighScores);
 }
 
 const startQuiz = () => {
@@ -102,7 +139,7 @@ const checkAnswer = (questionIndex, answerIndex) => {
         }
     }
     else {
-        console.log("WRONG!");
+
         document.getElementById("a" + answerIndex).classList.add("wrong");
         let nextQuestionIndex = questionIndex + 1;
         if (nextQuestionIndex < QUESTION_BANK.length) {
@@ -110,7 +147,7 @@ const checkAnswer = (questionIndex, answerIndex) => {
             setTimeout(() => displayQuestion(nextQuestionIndex), 200);
         }
         else {
-            console.log("DONE!");
+
             processEndGame();
         }
 
@@ -122,6 +159,28 @@ const processEndGame = () => {
     removePreviousQuestion();
     const mainDisplayText = document.querySelector(".main-display-text");
     mainDisplayText.remove();
+    const scoreBoard = document.querySelector(".score-board");
+    scoreBoard.innerText = "FINAL SCORE: " + currentScore;
+    const highScoreBox = document.createElement("form");
+    highScoreBox.classList.add("high-score-box");
+    const initialsLabel = document.createElement("label");
+    initialsLabel.innerText = "Enter initials to record score: ";
+    initialsLabel.id = "initials-label";
+    initialsLabel.htmlFor = "initials-input";
+    initialsLabel.classList.add("initial-label");
+    const initialsInput = document.createElement("input");
+    initialsInput.id = "initials-input";
+    initialsInput.classList.add("initials-input");
+    highScoreBox.appendChild(initialsLabel);
+    highScoreBox.appendChild(initialsInput);
+    scoreBoard.after(highScoreBox);
+
+    const submitButton = document.createElement("button");
+    submitButton.innerText = "SUBMIT";
+    submitButton.id = "submit"
+    submitButton.classList.add("start-btn");
+    highScoreBox.addEventListener("submit", saveHighScore)
+    highScoreBox.appendChild(submitButton);
 
 };
 
@@ -167,5 +226,75 @@ const startTimer = () => {
         }
     }, 1000);
 }
+
+const saveHighScore = (event) => {
+    event.preventDefault();
+    const initialInput = document.querySelector(".initials-input").value;
+    if (initialInput != '' && initialInput != null) {
+        //find id 
+        let newId = localStorage.length + 1;
+        let highScore = {
+            id: newId,
+            name: initialInput,
+            score: currentScore
+        }
+        localStorage.setItem(newId, JSON.stringify(highScore));
+        displayHighScores();
+    }
+}
+
+const displayHighScores = () => {
+    const highScoreArray = [];
+    //remove all displays from main display container
+    const mainDisplayContainer = document.querySelector(".main-display-container");
+    for (let i = 0; i < mainDisplayContainer.children.length; i++) {
+        mainDisplayContainer.children[0].remove();
+    }
+    const buttonDisplayContainer = document.querySelector(".button-display-container");
+    if (buttonDisplayContainer) {
+        buttonDisplayContainer.remove();
+    }
+
+    console.log(localStorage);
+    for (let i = 1; i <= localStorage.length; i++) {
+        let parsedScore = JSON.parse(localStorage.getItem(i));
+        highScoreArray.push({
+            id: parsedScore.id,
+            name: parsedScore.name,
+            score: parsedScore.score,
+        })
+    }
+
+    //sort the array by the value of score
+    highScoreArray.sort((x, y) => y.score - x.score);
+
+
+    console.log("High Score Array");
+    console.log(highScoreArray);
+    //take array and print table of high scores
+    const highScoreContainer = document.createElement("div");
+    highScoreContainer.classList.add("high-score-header-container");
+    const header = document.createElement("h2");
+    header.textContent = "HIGH SCORES";
+
+    header.classList.add("high-score-header")
+    mainDisplayContainer.append(highScoreContainer);
+    highScoreContainer.append(header);
+    for (let i = 0; i < highScoreArray.length; i++) {
+        let highScoreEntry = document.createElement("p");
+        highScoreEntry.textContent = (i + 1) + ". " + highScoreArray[i].name + " " + highScoreArray[i].score;
+        highScoreEntry.classList.add("high-score-entry")
+        highScoreContainer.append(highScoreEntry);
+    }
+
+    const highScoreLink = document.querySelector(".high-scores-link");
+    highScoreLink.textContent = "Play Again";
+    highScoreLink.removeEventListener("click", displayHighScores);
+    highScoreLink.addEventListener("click", startGame);
+
+
+}
+
+
 
 onGameLoad();

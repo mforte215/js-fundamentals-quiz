@@ -89,3 +89,28 @@
 .hide {
   visibility: hidden;
 }
+
+.initial-label {
+  text-align: center;
+  width: 50%;
+}
+
+.initials-input {
+  font-size: 1em;
+  width: 50%;
+}
+
+.high-score-box {
+  font-size: 1.8em;
+  display: flex;
+}
+
+.high-score-header {
+  font-size: 3em;
+  text-align: center;
+}
+
+.high-score-entry {
+  font-size: 2em;
+  text-align: center;
+}
