@@ -29,6 +29,7 @@
 .high-scores-link {
   top: 0;
   padding-left: 2em;
+  cursor: pointer;
 }
 
 .timer-text {
@@ -58,9 +59,12 @@
 }
 
 .start-btn {
+  width: 50%;
+  margin: 3% 25% 0 25%;
   padding: 10px;
   font-size: 3em;
   border-radius: 8px;
+  cursor: pointer;
 }
 
 .answer-btn {
@@ -70,6 +74,7 @@
   padding: 10px;
   border-radius: 8px;
   font-size: 2em;
+  cursor: pointer;
 }
 
 .wrong {
@@ -92,17 +97,18 @@
 
 .initial-label {
   text-align: center;
-  width: 50%;
+  width: 40%;
 }
 
 .initials-input {
   font-size: 1em;
-  width: 50%;
+  width: 40%;
 }
 
 .high-score-box {
   font-size: 1.8em;
   display: flex;
+  flex-wrap: wrap;
 }
 
 .high-score-header {

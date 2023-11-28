@@ -37,75 +37,40 @@ const QUESTION_BANK = [QUESTION_ONE, QUESTION_TWO, QUESTION_THREE, QUESTION_FOUR
 
 const TOTAL_SCORE = SCORE_VALUE * QUESTION_BANK.length;
 
-
+const timerTextParagraph = document.querySelector(".timer-text");
 let currentScore = 0;
-
-const onGameLoad = () => {
-    startGame();
-}
+let hasAnswered = false;
+let secondsLeft = 10;
+let currentQuestion = 0;
+let restartTimer = false;
+let isPlaying = false;
 
 const startGame = () => {
-    currentScore = 0;
-    const startText = "Welcome to the JS Fundamentals quiz game! This quiz will text your knowledge of Javascript. Press Start to begin!";
-    const mainDisplayContainer = document.querySelector(".main-display-container");
-    let scoreBoard = document.querySelector(".score-board");
-    if (!scoreBoard) {
-        scoreBoard = document.createElement("p");
-        scoreBoard.classList.add("score-board");
-        scoreBoard.textContent = "SCORE: --";
-        mainDisplayContainer.append(scoreBoard);
-    }
-    let mainDisplayText = document.querySelector(".main-display-text");
-    if (mainDisplayText) {
-        mainDisplayText.innerText = startText;
-    }
-    else {
-        console.log("CREATING MAIN DISPLAY TEXT");
-        mainDisplayText = document.createElement("p");
-        mainDisplayText.classList.add("main-display-text");
-        mainDisplayText.innerText = startText;
-        mainDisplayContainer.append(mainDisplayText);
-    }
-
-    let highScoreContainer = document.querySelector(".high-score-header-container");
-    if (highScoreContainer) {
-        highScoreContainer.remove();
-    }
-
-    const startBtn = document.createElement("button");
-    startBtn.id = "start-button";
-    startBtn.innerText = "Start"
-    startBtn.classList.add("start-btn");
-    let buttonDisplayContainer = document.querySelector(".button-display-container");
-    if (buttonDisplayContainer) {
-        buttonDisplayContainer.appendChild(startBtn);
-    }
-    else {
-        buttonDisplayContainer = document.createElement("div");
-        buttonDisplayContainer.classList.add("button-display-container");
-        buttonDisplayContainer.appendChild(startBtn);
-        mainDisplayContainer.append(buttonDisplayContainer);
-    }
-
-    isPlaying = true;
-    startBtn.addEventListener("click", startQuiz);
-    const highScoreLink = document.querySelector(".high-scores-link");
-    highScoreLink.textContent = "High Scores";
-    highScoreLink.removeEventListener("click", startGame);
-    highScoreLink.addEventListener("click", displayHighScores);
+    resetStartScreen();
 }
 
 const startQuiz = () => {
+    isPlaying = true;
     setScore();
     displayQuestion(STARTING_QUESTION_INDEX);
+    startTimer();
 }
 
 const displayQuestion = (questionIndex) => {
+    hasAnswered = false;
+    currentQuestion = questionIndex;
+
     const startBtn = document.getElementById("start-button");
     if (startBtn != null) {
         startBtn.remove();
     }
-
+    if (restartTimer) {
+        startTimer();
+        console.log("RESTARTING TIMER");
+        restartTimer = false;
+    }
+    secondsLeft = 10;
+    timerTextParagraph.textContent = "Time: 10s";
     const mainDisplayText = document.querySelector(".main-display-text");
     mainDisplayText.innerText = QUESTION_BANK[questionIndex].id + ". " + QUESTION_BANK[questionIndex].question
     const buttonDisplayContainer = document.querySelector(".button-display-container");
@@ -118,13 +83,14 @@ const displayQuestion = (questionIndex) => {
             checkAnswer(questionIndex, i);
         })
         buttonDisplayContainer.appendChild(answerBtn);
-
     }
+
 }
 
 const checkAnswer = (questionIndex, answerIndex) => {
     if (QUESTION_BANK[questionIndex].correctAnswerIndex == answerIndex) {
         console.log("CORRECT!");
+        hasAnswered = true;
         currentScore = currentScore + SCORE_VALUE;
         setScore(currentScore);
         document.getElementById("a" + answerIndex).classList.add("correct");
@@ -134,12 +100,12 @@ const checkAnswer = (questionIndex, answerIndex) => {
             setTimeout(() => displayQuestion(nextQuestionIndex), 200);
         }
         else {
-            console.log("DONE!");
+            console.log("CALLING ENDGAME FROM CHECK ANSWER CORRECT");
             processEndGame();
         }
     }
     else {
-
+        hasAnswered = true;
         document.getElementById("a" + answerIndex).classList.add("wrong");
         let nextQuestionIndex = questionIndex + 1;
         if (nextQuestionIndex < QUESTION_BANK.length) {
@@ -147,22 +113,51 @@ const checkAnswer = (questionIndex, answerIndex) => {
             setTimeout(() => displayQuestion(nextQuestionIndex), 200);
         }
         else {
-
+            console.log("CALLING ENDGAME FROM CHECK ANSWER WRONG");
             processEndGame();
         }
 
     }
 }
 
+const autoAnswer = (questionIndex) => {
+    hasAnswered = true;
+    let currentQuestion = QUESTION_BANK[questionIndex];
+    let answerIndex = currentQuestion.correctAnswerIndex;
+    console.log("AUTO ANSWERING QUESTION:");
+    console.log(currentQuestion);
+    for (let i = 0; i < currentQuestion.answers.length; i++) {
+        if (answerIndex == i) {
+            document.getElementById("a" + i).classList.add("correct");
+        }
+        else {
+            document.getElementById("a" + i).classList.add("wrong");
+        }
+    }
+    let nextQuestionIndex = questionIndex + 1;
+    if (nextQuestionIndex < QUESTION_BANK.length) {
+        removePreviousQuestion();
+        setTimeout(() => displayQuestion(nextQuestionIndex), 200);
+    }
+    else {
+        console.log("CALLING ENDGAME FROM AUTO ANSWER CORRECT");
+        processEndGame();
+    }
+}
+
 const processEndGame = () => {
-    const FINAL_SCORE = currentScore / TOTAL_SCORE;
+    isPlaying = false;
+    secondsLeft = 0;
     removePreviousQuestion();
     const mainDisplayText = document.querySelector(".main-display-text");
-    mainDisplayText.remove();
+    if (mainDisplayText) {
+        mainDisplayText.remove();
+    }
+
     const scoreBoard = document.querySelector(".score-board");
     scoreBoard.innerText = "FINAL SCORE: " + currentScore;
     const highScoreBox = document.createElement("form");
-    highScoreBox.classList.add("high-score-box");
+    highScoreBox.classList.add("high-score-box", "hover-cursor");
     const initialsLabel = document.createElement("label");
     initialsLabel.innerText = "Enter initials to record score: ";
     initialsLabel.id = "initials-label";
@@ -212,19 +207,16 @@ const removePreviousQuestion = () => {
 }
 
 const startTimer = () => {
-    let timeleft = 25;
-    let timer = setInterval(() => {
-        if (timeleft >= 1) {
-            document.querySelector(".timer-text").innerText = "Time: " + timeleft + "s";
-            timeleft -= 1;
+    let timerInterval = setInterval(() => {
+        secondsLeft--;
+        timerTextParagraph.textContent = "Time: " + secondsLeft + "s";
+        if (secondsLeft <= 0 && isPlaying) {
+            clearInterval(timerInterval);
+            autoAnswer(currentQuestion);
+            restartTimer = true;
         }
-        else {
+    }, 1000)
 
-            clearInterval(timer);
-            document.querySelector(".timer-text").innerText = "out of time"
-            return false;
-        }
-    }, 1000);
 }
 
 const saveHighScore = (event) => {
@@ -265,12 +257,7 @@ const displayHighScores = () => {
         })
     }
 
-    //sort the array by the value of score
     highScoreArray.sort((x, y) => y.score - x.score);
-
-
-    console.log("High Score Array");
-    console.log(highScoreArray);
     //take array and print table of high scores
     const highScoreContainer = document.createElement("div");
     highScoreContainer.classList.add("high-score-header-container");
@@ -290,11 +277,66 @@ const displayHighScores = () => {
     const highScoreLink = document.querySelector(".high-scores-link");
     highScoreLink.textContent = "Play Again";
     highScoreLink.removeEventListener("click", displayHighScores);
-    highScoreLink.addEventListener("click", startGame);
+    highScoreLink.addEventListener("click", reloadGame);
 
 
 }
 
+/* VERSION 2 */
 
+const reloadGame = () => {
+    location.reload()
+}
 
-onGameLoad();
+const resetStartScreen = () => {
+    isPlaying = false;
+    currentScore = 0;
+    const startText = "Welcome to the JS Fundamentals quiz game! This quiz will text your knowledge of Javascript. Press Start to begin!";
+    const mainDisplayContainer = document.querySelector(".main-display-container");
+    let scoreBoard = document.querySelector(".score-board");
+    if (!scoreBoard) {
+        scoreBoard = document.createElement("p");
+        scoreBoard.classList.add("score-board");
+        scoreBoard.textContent = "SCORE: --";
+        mainDisplayContainer.append(scoreBoard);
+    }
+    let mainDisplayText = document.querySelector(".main-display-text");
+    if (mainDisplayText) {
+        mainDisplayText.innerText = startText;
+    }
+    else {
+        console.log("CREATING MAIN DISPLAY TEXT");
+        mainDisplayText = document.createElement("p");
+        mainDisplayText.classList.add("main-display-text");
+        mainDisplayText.innerText = startText;
+        mainDisplayContainer.append(mainDisplayText);
+    }
+
+    let highScoreContainer = document.querySelector(".high-score-header-container");
+    if (highScoreContainer) {
+        highScoreContainer.remove();
+    }
+
+    const startBtn = document.createElement("button");
+    startBtn.id = "start-button";
+    startBtn.innerText = "Start"
+    startBtn.classList.add("start-btn");
+    let buttonDisplayContainer = document.querySelector(".button-display-container");
+    if (buttonDisplayContainer) {
+        buttonDisplayContainer.appendChild(startBtn);
+    }
+    else {
+        buttonDisplayContainer = document.createElement("div");
+        buttonDisplayContainer.classList.add("button-display-container");
+        buttonDisplayContainer.appendChild(startBtn);
+        mainDisplayContainer.append(buttonDisplayContainer);
+    }
+
+    startBtn.addEventListener("click", startQuiz);
+    const highScoreLink = document.querySelector(".high-scores-link");
+    highScoreLink.textContent = "High Scores";
+    highScoreLink.removeEventListener("click", reloadGame);
+    highScoreLink.addEventListener("click", displayHighScores)
+}
+
+startGame();
