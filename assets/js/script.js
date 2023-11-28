@@ -41,6 +41,7 @@ const timerTextParagraph = document.querySelector(".timer-text");
 let currentScore = 0;
 let hasAnswered = false;
 let secondsLeft = 10;
+let timerInterval;
 let currentQuestion = 0;
 let restartTimer = false;
 let isPlaying = false;
@@ -146,8 +147,10 @@ const autoAnswer = (questionIndex) => {
 }
 
 const processEndGame = () => {
-    isPlaying = false;
+    clearInterval(timerInterval);
     secondsLeft = 0;
+    timerTextParagraph.textContent = "Time: " + secondsLeft + "s";
+    isPlaying = false;
     removePreviousQuestion();
     const mainDisplayText = document.querySelector(".main-display-text");
     if (mainDisplayText) {
@@ -207,7 +210,7 @@ const removePreviousQuestion = () => {
 }
 
 const startTimer = () => {
-    let timerInterval = setInterval(() => {
+    timerInterval = setInterval(() => {
         secondsLeft--;
         timerTextParagraph.textContent = "Time: " + secondsLeft + "s";
         if (secondsLeft <= 0 && isPlaying) {
