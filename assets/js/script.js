@@ -261,7 +261,7 @@ const displayHighScores = () => {
     }
 
     highScoreArray.sort((x, y) => y.score - x.score);
-    //take array and print table of high scores
+
     const highScoreContainer = document.createElement("div");
     highScoreContainer.classList.add("high-score-header-container");
     const header = document.createElement("h2");
