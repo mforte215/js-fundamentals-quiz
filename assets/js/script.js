@@ -39,7 +39,6 @@ const TOTAL_SCORE = SCORE_VALUE * QUESTION_BANK.length;
 
 const timerTextParagraph = document.querySelector(".timer-text");
 let currentScore = 0;
-let hasAnswered = false;
 let secondsLeft = 10;
 let timerInterval;
 let currentQuestion = 0;
@@ -58,7 +57,6 @@ const startQuiz = () => {
 }
 
 const displayQuestion = (questionIndex) => {
-    hasAnswered = false;
     currentQuestion = questionIndex;
 
     const startBtn = document.getElementById("start-button");
@@ -67,7 +65,6 @@ const displayQuestion = (questionIndex) => {
     }
     if (restartTimer) {
         startTimer();
-        console.log("RESTARTING TIMER");
         restartTimer = false;
     }
     secondsLeft = 10;
@@ -90,8 +87,6 @@ const displayQuestion = (questionIndex) => {
 
 const checkAnswer = (questionIndex, answerIndex) => {
     if (QUESTION_BANK[questionIndex].correctAnswerIndex == answerIndex) {
-        console.log("CORRECT!");
-        hasAnswered = true;
         currentScore = currentScore + SCORE_VALUE;
         setScore(currentScore);
         document.getElementById("a" + answerIndex).classList.add("correct");
@@ -101,12 +96,10 @@ const checkAnswer = (questionIndex, answerIndex) => {
             setTimeout(() => displayQuestion(nextQuestionIndex), 200);
         }
         else {
-            console.log("CALLING ENDGAME FROM CHECK ANSWER CORRECT");
             processEndGame();
         }
     }
     else {
-        hasAnswered = true;
         document.getElementById("a" + answerIndex).classList.add("wrong");
         let nextQuestionIndex = questionIndex + 1;
         if (nextQuestionIndex < QUESTION_BANK.length) {
@@ -114,7 +107,6 @@ const checkAnswer = (questionIndex, answerIndex) => {
             setTimeout(() => displayQuestion(nextQuestionIndex), 200);
         }
         else {
-            console.log("CALLING ENDGAME FROM CHECK ANSWER WRONG");
             processEndGame();
         }
 
@@ -122,11 +114,8 @@ const checkAnswer = (questionIndex, answerIndex) => {
 }
 
 const autoAnswer = (questionIndex) => {
-    hasAnswered = true;
     let currentQuestion = QUESTION_BANK[questionIndex];
     let answerIndex = currentQuestion.correctAnswerIndex;
-    console.log("AUTO ANSWERING QUESTION:");
-    console.log(currentQuestion);
     for (let i = 0; i < currentQuestion.answers.length; i++) {
         if (answerIndex == i) {
             document.getElementById("a" + i).classList.add("correct");
@@ -141,7 +130,6 @@ const autoAnswer = (questionIndex) => {
         setTimeout(() => displayQuestion(nextQuestionIndex), 200);
     }
     else {
-        console.log("CALLING ENDGAME FROM AUTO ANSWER CORRECT");
         processEndGame();
     }
 }
@@ -226,7 +214,6 @@ const saveHighScore = (event) => {
     event.preventDefault();
     const initialInput = document.querySelector(".initials-input").value;
     if (initialInput != '' && initialInput != null) {
-        //find id 
         let newId = localStorage.length + 1;
         let highScore = {
             id: newId,
@@ -240,7 +227,6 @@ const saveHighScore = (event) => {
 
 const displayHighScores = () => {
     const highScoreArray = [];
-    //remove all displays from main display container
     const mainDisplayContainer = document.querySelector(".main-display-container");
     for (let i = 0; i < mainDisplayContainer.children.length; i++) {
         mainDisplayContainer.children[0].remove();
@@ -250,7 +236,6 @@ const displayHighScores = () => {
         buttonDisplayContainer.remove();
     }
 
-    console.log(localStorage);
     for (let i = 1; i <= localStorage.length; i++) {
         let parsedScore = JSON.parse(localStorage.getItem(i));
         highScoreArray.push({
@@ -285,8 +270,6 @@ const displayHighScores = () => {
 
 }
 
-/* VERSION 2 */
-
 const reloadGame = () => {
     location.reload()
 }
@@ -308,7 +291,6 @@ const resetStartScreen = () => {
         mainDisplayText.innerText = startText;
     }
     else {
-        console.log("CREATING MAIN DISPLAY TEXT");
         mainDisplayText = document.createElement("p");
         mainDisplayText.classList.add("main-display-text");
         mainDisplayText.innerText = startText;
