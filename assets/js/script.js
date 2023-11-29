@@ -39,7 +39,7 @@ const TOTAL_SCORE = SCORE_VALUE * QUESTION_BANK.length;
 
 const timerTextParagraph = document.querySelector(".timer-text");
 let currentScore = 0;
-let secondsLeft = 10;
+let secondsLeft = 60;
 let timerInterval;
 let currentQuestion = 0;
 let restartTimer = false;
@@ -63,12 +63,13 @@ const displayQuestion = (questionIndex) => {
     if (startBtn != null) {
         startBtn.remove();
     }
-    if (restartTimer) {
-        startTimer();
-        restartTimer = false;
-    }
+    /*     if (restartTimer) {
+            startTimer();
+            restartTimer = false;
+        } 
     secondsLeft = 10;
     timerTextParagraph.textContent = "Time: 10s";
+    */
     const mainDisplayText = document.querySelector(".main-display-text");
     mainDisplayText.innerText = QUESTION_BANK[questionIndex].id + ". " + QUESTION_BANK[questionIndex].question
     const buttonDisplayContainer = document.querySelector(".button-display-container");
@@ -101,6 +102,7 @@ const checkAnswer = (questionIndex, answerIndex) => {
     }
     else {
         document.getElementById("a" + answerIndex).classList.add("wrong");
+        secondsLeft = secondsLeft - 10;
         let nextQuestionIndex = questionIndex + 1;
         if (nextQuestionIndex < QUESTION_BANK.length) {
             removePreviousQuestion();
@@ -203,8 +205,9 @@ const startTimer = () => {
         timerTextParagraph.textContent = "Time: " + secondsLeft + "s";
         if (secondsLeft <= 0 && isPlaying) {
             clearInterval(timerInterval);
-            autoAnswer(currentQuestion);
-            restartTimer = true;
+            processEndGame();
+            //autoAnswer(currentQuestion);
+            //restartTimer = true;
         }
     }, 1000)
 
