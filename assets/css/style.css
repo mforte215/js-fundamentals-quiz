@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Bungee+Spice&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
 * {
-  font-family: "Bungee Spice", sans-serif;
+  font-family: "Poppins", sans-serif;
   margin: 0;
   text-shadow: 1px 0.8px 1px rgba(89, 89, 89, 1);
 }
@@ -9,6 +9,14 @@
 .main-header {
   text-align: center;
   font-size: 2em;
+}
+
+.header-title {
+  width: fit-content;
+  margin: 3% auto 0 auto;
+  background-color: #f7df1e;
+  padding: 20px;
+  border-radius: 9px;
 }
 
 .sub-header {
@@ -69,7 +77,8 @@
   border-radius: 8px;
   cursor: pointer;
   border: 2px outset;
-  box-shadow: 4px 2px 5px 0px rgba(0, 0, 0, 0.75);
+  box-shadow: 4px 2px 5px 0px rgba#f7df1e;
+  background-color: #f7df1e;
 }
 
 .answer-btn {
