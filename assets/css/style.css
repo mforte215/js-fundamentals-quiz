@@ -179,4 +179,7 @@
     font-size: larger;
     margin-top: 5%;
   }
+  .score-board {
+    font-size: 2em;
+  }
 }
