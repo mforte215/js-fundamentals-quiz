@@ -22,7 +22,7 @@ Link to the website deployed on GitHub Pages: https://mforte215.github.io/js-fun
 Link to the code repository on GitHub: https://github.com/mforte215/js-fundamentals-quiz
 
 A screenshot of the current site:
-![Screenshot of the current online site with the lay of the page displayed](./assets/images/mforte215.github.io_js-fundamentals-quiz_.png)
+![Screenshot of the current online site with the lay of the page displayed](./assets/images/quiz-game-js.png)
 
 ## Credits
 
